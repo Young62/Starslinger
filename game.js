@@ -10,7 +10,6 @@ function preload() {
     game.load.spritesheet('kaboom', 'assets/explode.png', 128, 128);
     game.load.image('starfield', 'assets/starfield.png');
     game.load.image('background', 'assets/level1.png');
-
 }
 
 var player;
@@ -173,9 +172,14 @@ function update() {
             fireBullet();
         }
 
-        screenWrap(player);
+        //screenWrap(player);
 
-        bullets.forEachExists(screenWrap, this);
+        //bullets.forEachExists(screenWrap, this);
+		
+		if (game.time.now > firingTimer)
+        {
+            enemyFires();
+        }
 
         //  Run collision
         game.physics.arcade.overlap(bullets, aliens, collisionHandler, null, this);
