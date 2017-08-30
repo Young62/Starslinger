@@ -75,17 +75,6 @@ function create() {
     game.camera.follow(player);
     player.body.collideWorldBounds=true;
 
-    //radar
-    radar=game.add.group();
-    radar.enableBody = true;
-    radar.physicsBodyType = Phaser.Physics.ARCADE;
-    radar.fixedToCamera=true;
-    heading = game.add.sprite(100, 500, 'healthy');
-    game.physics.enable(heading, Phaser.Physics.ARCADE);
-    heading.fixedToCamera=true;
-    heading.anchor.setTo(0.5, 0.5);
-    heading.alpha = 1;
-
     //  The baddies!
     aliens = game.add.group();
     aliens.enableBody = true;
@@ -116,25 +105,37 @@ function create() {
 }
 
 function createAliens () {
-    for (var y = 0; y < 5; y++)
-    {
-        for (var x = 0; x < 5; x++)
-        {
-            var alien = aliens.create(x * game.rnd.integerInRange(1,200), y * game.rnd.integerInRange(1,400), 'invader');
-            alien.anchor.setTo(0.5, 0.5);
-            alien.animations.add('fly', [ 0, 1, 2, 3 ], 20, true);
-            alien.play('fly');
-            alien.body.moves = false;
+  //radar
+  radar=game.add.group();
+  radar.enableBody = true;
+  radar.physicsBodyType = Phaser.Physics.ARCADE;
+  radar.fixedToCamera=true;
+  heading = game.add.sprite(100, 500, 'healthy');
+  game.physics.enable(heading, Phaser.Physics.ARCADE);
+  heading.fixedToCamera=true;
+  heading.anchor.setTo(0.5, 0.5);
+  heading.rotation=player.body.angle;
+  heading.alpha = 1;
 
-            var blip = radar.create(100 , 500, 'blip');
-            blip.anchor.setTo(0, 0.5);
-            blip.body.angle = game.physics.arcade.angleBetween(player,alien);
-            blip.alpha = .5;
-        }
-    }
+  for (var y = 0; y < 5; y++)
+  {
+      for (var x = 0; x < 5; x++)
+      {
+          var alien = aliens.create(x * game.rnd.integerInRange(1,200), y * game.rnd.integerInRange(1,400), 'invader');
+          alien.anchor.setTo(0.5, 0.5);
+          alien.animations.add('fly', [ 0, 1, 2, 3 ], 20, true);
+          alien.play('fly');
+          alien.body.moves = false;
 
-    //  All this does is basically start the invaders moving. Notice we're moving the Group they belong to, rather than the invaders directly.
-    var tween = game.add.tween(aliens).to( { x: 200 }, 2000, Phaser.Easing.Linear.None, true, 0, 1000, true);
+          var blip = radar.create(100 , 500, 'blip');
+          blip.anchor.setTo(0, 0.5);
+          blip.body.angle = game.physics.arcade.angleBetween(player,alien);
+          blip.alpha = .5;
+      }
+  }
+
+  //  All this does is basically start the invaders moving. Notice we're moving the Group they belong to, rather than the invaders directly.
+  var tween = game.add.tween(aliens).to( { x: 200 }, 2000, Phaser.Easing.Linear.None, true, 0, 1000, true);
 }
 
 function setupInvader (invader) {
@@ -151,6 +152,7 @@ function restart () {
     heading.loadTexture(healthStatus[health],0);
     //  And brings the aliens back from the dead :)
     aliens.removeAll();
+    radar.remove();
     createAliens();
 
     //revives the player
