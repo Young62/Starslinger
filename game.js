@@ -152,7 +152,7 @@ function restart () {
     heading.loadTexture(healthStatus[health],0);
     //  And brings the aliens back from the dead :)
     aliens.removeAll();
-    radar.remove();
+    radar.removeAll();
     createAliens();
 
     //revives the player
