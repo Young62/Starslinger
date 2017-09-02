@@ -1,21 +1,20 @@
 
-var game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.AUTO, 'phaser-example', { preload: preload, create: create, update: update, render: render });
+var game = new Phaser.Game(900, 900, Phaser.AUTO, 'phaser-example', { preload: preload, create: create, update: update, render: render });
 
 function preload() {
+  game.load.image('bullet', 'assets/bullets.png');
+  game.load.image('ship', 'assets/ship.png');
+  game.load.image('enemyBullet', 'assets/enemy-bullet.png');
+  game.load.spritesheet('invader', 'assets/invader32x32x4.png', 32, 32);
+  game.load.spritesheet('kaboom', 'assets/explode.png', 128, 128);
+  game.load.image('starfield', 'assets/starfield.png');
+  game.load.image('background', 'assets/level1.png');
+  game.load.image('blip','assets/blip.png');
 
-    game.load.image('bullet', 'assets/bullets.png');
-    game.load.image('ship', 'assets/ship.png');
-    game.load.image('enemyBullet', 'assets/enemy-bullet.png');
-    game.load.spritesheet('invader', 'assets/invader32x32x4.png', 32, 32);
-    game.load.spritesheet('kaboom', 'assets/explode.png', 128, 128);
-    game.load.image('starfield', 'assets/starfield.png');
-    game.load.image('background', 'assets/level1.png');
-    game.load.image('blip','assets/blip.png');
-
-    game.load.image('healthy','assets/heading.png');
-    game.load.image('light','assets/heading-light.png');
-    game.load.image('heavy','assets/heading-heavy.png');
-    game.load.image('dead','assets/heading-dead.png');
+  game.load.image('healthy','assets/heading.png');
+  game.load.image('light','assets/heading-light.png');
+  game.load.image('heavy','assets/heading-heavy.png');
+  game.load.image('dead','assets/heading-dead.png');
 }
 
 var player;
@@ -43,8 +42,8 @@ var livingEnemies = [];
 
 function create() {
     //  The scrolling starfield background
-    starfield = game.add.tileSprite(0, 0, 1920, 1920, 'starfield');
-    game.world.setBounds(0, 0, 1920, 1920);
+    starfield = game.add.tileSprite(0, 0, 1800, 1800, 'starfield');
+    game.world.setBounds(0, 0, 1800, 1800);
 
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -75,6 +74,18 @@ function create() {
     game.camera.follow(player);
     player.body.collideWorldBounds=true;
 
+    //radar
+    radar=game.add.group();
+    radar.enableBody = true;
+    radar.physicsBodyType = Phaser.Physics.ARCADE;
+    radar.fixedToCamera=true;
+    heading = game.add.sprite(100, 500, 'healthy');
+    game.physics.enable(heading, Phaser.Physics.ARCADE);
+    heading.fixedToCamera=true;
+    heading.anchor.setTo(0.5, 0.5);
+    heading.rotation=player.body.angle;
+    heading.alpha = 1;
+
     //  The baddies!
     aliens = game.add.group();
     aliens.enableBody = true;
@@ -104,34 +115,19 @@ function create() {
     fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 }
 
-function createAliens () {
-  //radar
-  radar=game.add.group();
-  radar.enableBody = true;
-  radar.physicsBodyType = Phaser.Physics.ARCADE;
-  radar.fixedToCamera=true;
-  heading = game.add.sprite(100, 500, 'healthy');
-  game.physics.enable(heading, Phaser.Physics.ARCADE);
-  heading.fixedToCamera=true;
-  heading.anchor.setTo(0.5, 0.5);
-  heading.rotation=player.body.angle;
-  heading.alpha = 1;
+function createAliens(){
 
-  for (var y = 0; y < 5; y++)
-  {
-      for (var x = 0; x < 5; x++)
-      {
-          var alien = aliens.create(x * game.rnd.integerInRange(1,200), y * game.rnd.integerInRange(1,400), 'invader');
-          alien.anchor.setTo(0.5, 0.5);
-          alien.animations.add('fly', [ 0, 1, 2, 3 ], 20, true);
-          alien.play('fly');
-          alien.body.moves = false;
+  for (var y = 0; y < 10; y++){
+    var alien = aliens.create(game.rnd.integerInRange(10,1800), game.rnd.integerInRange(10,1800), 'invader');
+    alien.anchor.setTo(0.5, 0.5);
+    alien.animations.add('fly', [ 0, 1, 2, 3 ], 20, true);
+    alien.play('fly');
+    alien.body.moves = false;
 
-          var blip = radar.create(100 , 500, 'blip');
-          blip.anchor.setTo(0, 0.5);
-          blip.body.angle = game.physics.arcade.angleBetween(player,alien);
-          blip.alpha = .5;
-      }
+    var blip = radar.create(100 , 500, 'blip');
+    blip.anchor.setTo(0, 0.5);
+    blip.body.angle = game.physics.arcade.angleBetween(player,alien);
+    blip.alpha = .5;
   }
 
   //  All this does is basically start the invaders moving. Notice we're moving the Group they belong to, rather than the invaders directly.
@@ -147,9 +143,6 @@ function setupInvader (invader) {
 function restart () {
     //  A new level starts
 
-    //resets health
-    health=healthStatus.length-1;
-    heading.loadTexture(healthStatus[health],0);
     //  And brings the aliens back from the dead :)
     aliens.removeAll();
     radar.removeAll();
@@ -158,6 +151,9 @@ function restart () {
     //revives the player
     player.reset();
     player.revive();
+    health=healthStatus.length-1;
+    heading.loadTexture(healthStatus[health],0);
+    heading.angle=player.body.rotation;
     //hides the text
     stateText.visible = false;
 }
