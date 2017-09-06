@@ -23,6 +23,10 @@ var stateText;
 var livingEnemies = [];
 
 var playState={
+  preload:function(){
+    game.load.audio('passenger','assets/audio/Passenger.ogg');
+  },
+
   create: function(){
     //  The scrolling starfield background
     starfield = game.add.tileSprite(0, 0, 1800, 1800, 'starfield');

@@ -1,4 +1,8 @@
 var winState={
+  preload:function(){
+    game.load.audio('oneWay','assets/audio/oneWay.ogg');
+  },
+
   create:function(){
     music=game.add.audio('oneWay');
     music.play();

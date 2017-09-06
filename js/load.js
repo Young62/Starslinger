@@ -1,7 +1,7 @@
 var loadState={
   preload:function(){
     var loadingLabel=game.add.text(80, 150, 'loading...', {font: '30px Courier', fill: '#ffffff'});
-    
+
     game.load.image('bullet', 'assets/bullets.png');
     game.load.image('ship', 'assets/ship.png');
     game.load.image('enemyBullet', 'assets/enemy-bullet.png');
@@ -29,9 +29,7 @@ var loadState={
     game.load.audio('scream','assets/audio/scream.ogg');
 
     //soundtrack
-    game.load.audio('passenger','assets/audio/Passenger.ogg');
     game.load.audio('blackCoffee','assets/audio/blackCoffee.ogg');
-    game.load.audio('oneWay','assets/audio/oneWay.ogg');
   },
 
   create: function(){
