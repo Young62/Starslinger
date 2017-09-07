@@ -103,6 +103,8 @@ var playState={
     //////////
 
     //  And some controls to play the game with
+    game.input.mouse.capture=true;
+    game.canvas.oncontextmenu = function (e) { e.preventDefault(); }
     cursors = game.input.keyboard.createCursorKeys();
     pauseButton = game.input.keyboard.addKey(Phaser.Keyboard.P);
 
@@ -122,31 +124,29 @@ var playState={
     starfield.tilePosition.y += 1*player.body.angle;
 
     if (player.alive){
-      if(cursors.down.isDown){
-        game.physics.arcade.accelerationFromRotation(player.rotation, -100, player.body.acceleration);
-      }else if (cursors.up.isDown){
-        game.physics.arcade.accelerationFromRotation(player.rotation, 200, player.body.acceleration);
+      //mouse controls
+      if(game.input.mousePointer.isDown){
+        if (game.input.activePointer.rightButton.isDown){
+          fireBullet();
+        }else if(game.input.activePointer.leftButton.isDown){
+          game.physics.arcade.accelerationFromRotation(player.rotation, 200, player.body.acceleration);
+        }
+
+        if(player.rotation<game.physics.arcade.angleToPointer(player) ){
+          player.rotation += .1;
+          heading.rotation += .1;
+        }else{
+          player.rotation -= .1;
+          heading.rotation -= .1;
+        }
       }else{
         player.body.acceleration.set(0);
       }
 
-      if (cursors.left.isDown){
-        player.body.angularVelocity = -300;
-        heading.body.angularVelocity= -300;
-      }else if (cursors.right.isDown){
-        player.body.angularVelocity = 300;
-        heading.body.angularVelocity= 300;
-      }else{
-        player.body.angularVelocity = 0;
-        heading.body.angularVelocity= 0;
-      }
+      //touch controls
 
-      if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR)){
-        fireBullet();
-      }
 
-      player.events.onOutOfBounds.add(function(){console.log('hit');}, this);
-
+      //enemy fire control
 		  if (game.time.now > firingTimer){
           enemyFires();
       }

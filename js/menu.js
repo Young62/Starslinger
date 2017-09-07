@@ -46,8 +46,18 @@ var menuState={
     game.input.onTap.addOnce(this.start, this);
   },
 
+  goFullScreen: function() {
+    this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;  
+    if (this.game.scale.isFullScreen) {
+      this.game.scale.stopFullScreen();
+    } else {
+      this.game.scale.startFullScreen();
+    }
+  },
+
   start: function(){
     music.stop();
+    this.goFullScreen();
     game.state.start('play');
   }
 }
